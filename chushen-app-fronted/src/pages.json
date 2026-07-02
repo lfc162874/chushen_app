@@ -37,33 +37,5 @@
     "navigationBarBackgroundColor": "#FFF7EA",
     "backgroundColor": "#FFF7EA",
     "navigationStyle": "custom"
-  },
-  "tabBar": {
-    "color": "#7A6A5E",
-    "selectedColor": "#FF6B1A",
-    "backgroundColor": "#FFFFFF",
-    "borderStyle": "white",
-    "list": [
-      {
-        "pagePath": "pages/index/index",
-        "text": "首页"
-      },
-      {
-        "pagePath": "pages/recipes/index",
-        "text": "菜谱"
-      },
-      {
-        "pagePath": "pages/publish/index",
-        "text": "发布"
-      },
-      {
-        "pagePath": "pages/discover/index",
-        "text": "发现"
-      },
-      {
-        "pagePath": "pages/profile/index",
-        "text": "我的"
-      }
-    ]
   }
 }
