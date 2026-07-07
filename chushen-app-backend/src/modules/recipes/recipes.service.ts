@@ -1,34 +1,9 @@
-import { prisma } from '../../plugins/prisma.js';
+import { findRecipeById, findRecipes } from './recipes.repository.js';
 
 export async function listRecipes() {
-  return prisma.recipe.findMany({
-    include: {
-      author: true,
-      category: true,
-      ingredients: {
-        include: {
-          ingredient: true
-        }
-      }
-    },
-    orderBy: {
-      createdAt: 'desc'
-    }
-  });
+  return findRecipes();
 }
 
 export async function getRecipeDetail(id: string) {
-  return prisma.recipe.findUnique({
-    where: { id },
-    include: {
-      steps: true,
-      nutrition: true,
-      media: true,
-      ingredients: {
-        include: {
-          ingredient: true
-        }
-      }
-    }
-  });
+  return findRecipeById(id);
 }
