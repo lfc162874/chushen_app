@@ -7,8 +7,15 @@ import {
 } from './recipes.repository.js';
 import type { CreateRecipeDTO, UpdateRecipeDTO } from './recipes.dto.js';
 
-export async function listRecipes() {
-  return findRecipes();
+export async function listRecipes(page = 1, pageSize = 20) {
+  const [list, total] = await findRecipes((page - 1) * pageSize, pageSize);
+
+  return {
+    list,
+    total,
+    page,
+    pageSize
+  };
 }
 
 export async function getRecipeDetail(id: string) {
