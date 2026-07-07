@@ -1,0 +1,28 @@
+{
+  "name": "chushen-app-backend",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsup src/server.ts --format esm --dts",
+    "start": "node dist/server.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev"
+  },
+  "dependencies": {
+    "@fastify/cors": "latest",
+    "@fastify/swagger": "latest",
+    "@fastify/swagger-ui": "latest",
+    "@prisma/client": "latest",
+    "dotenv": "latest",
+    "fastify": "latest",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "prisma": "latest",
+    "tsx": "latest",
+    "tsup": "latest",
+    "typescript": "latest",
+    "@types/node": "latest"
+  }
+}

@@ -6,6 +6,10 @@
 
 ```text
 .
+├── chushen-app-backend/
+│   ├── docs/
+│   │   └── TECH_ARCHITECTURE.md
+│   └── README.md
 └── chushen-app-fronted/
     ├── src/
     │   ├── pages/
@@ -30,6 +34,16 @@
 - TypeScript
 - npm
 - Node.js 22
+
+## 后端规划
+
+后端工程目录为 `chushen-app-backend/`，计划使用 TypeScript 开发，初始推荐技术栈为 Node.js 22、Fastify、Prisma、PostgreSQL、Redis、Zod 与 OpenAPI。
+
+后端技术架构文档见：
+
+```text
+chushen-app-backend/docs/TECH_ARCHITECTURE.md
+```
 
 ## 本地开发
 
