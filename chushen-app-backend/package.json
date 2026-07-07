@@ -1,0 +1,24 @@
+{
+  "name": "chushen-app-backend",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsup src/server.ts --format esm --dts",
+    "start": "node dist/server.js"
+  },
+  "dependencies": {
+    "@fastify/cors": "latest",
+    "@fastify/swagger": "latest",
+    "@fastify/swagger-ui": "latest",
+    "dotenv": "latest",
+    "fastify": "latest",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "tsx": "latest",
+    "tsup": "latest",
+    "typescript": "latest",
+    "@types/node": "latest"
+  }
+}
