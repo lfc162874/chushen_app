@@ -1,6 +1,10 @@
 import type { FastifyInstance } from 'fastify';
+import { registerPrisma } from './plugins/prisma.js';
+import { recipeRoutes } from './modules/recipes/recipes.routes.js';
 
 export async function registerApp(app: FastifyInstance) {
+  await registerPrisma(app);
+
   app.get('/health', async () => ({
     success: true,
     service: 'chushen-backend'
@@ -16,4 +20,6 @@ export async function registerApp(app: FastifyInstance) {
       }
     }));
   });
+
+  await app.register(recipeRoutes);
 }
