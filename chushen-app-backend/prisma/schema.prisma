@@ -8,66 +8,141 @@ datasource db {
 }
 
 /// 用户表
-/// 存储注册用户、小程序用户以及用户成长信息
 model User {
   id        String   @id @default(cuid()) // 用户ID
   nickname  String? // 用户昵称
-  avatar    String? // 用户头像地址
+  avatar    String? // 用户头像
   openid    String?  @unique // 微信OpenID
   level     Int      @default(1) // 厨神等级
 
-  recipes   Recipe[] // 用户发布菜谱
-  favorites RecipeFavorite[] // 用户收藏记录
+  recipes   Recipe[]
+  favorites RecipeFavorite[]
+  posts     CommunityPost[]
 
-  createdAt DateTime @default(now()) // 创建时间
-  updatedAt DateTime @updatedAt // 更新时间
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-/// 菜谱表
-/// 核心业务数据，包含官方菜谱以及用户发布菜谱
+/// 菜谱分类表
+model RecipeCategory {
+  id        String   @id @default(cuid()) // 分类ID
+  name      String // 分类名称，例如家常菜、快手菜
+  sort      Int      @default(0) // 排序值
+  recipes   Recipe[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/// 菜谱主表
 model Recipe {
   id              String   @id @default(cuid()) // 菜谱ID
-  title           String // 菜谱名称
-  cover           String? // 菜谱封面图片
-  description     String? // 菜谱简介
-  difficulty      String? // 难度等级：easy/medium/hard
-  cookMinutes     Int? // 烹饪耗时（分钟）
-
+  title           String // 菜名
+  cover           String? // 封面图片
+  description     String? // 简介
+  difficulty      String? // 难度
+  cookMinutes     Int? // 烹饪时间分钟
   viewCount       Int      @default(0) // 浏览次数
-  likeCount       Int      @default(0) // 点赞数量
+  likeCount       Int      @default(0) // 点赞次数
 
-  authorId        String // 发布用户ID
-  author          User     @relation(fields: [authorId], references: [id]) // 发布用户
+  authorId        String // 作者ID
+  categoryId      String? // 分类ID
 
-  steps           RecipeStep[] // 烹饪步骤
-  favorites       RecipeFavorite[] // 收藏关系
+  author          User @relation(fields: [authorId], references: [id])
+  category        RecipeCategory? @relation(fields: [categoryId], references: [id])
+  steps           RecipeStep[]
+  ingredients     RecipeIngredient[]
+  favorites       RecipeFavorite[]
+  nutrition       RecipeNutrition?
+  media           RecipeMedia[]
 
-  createdAt       DateTime @default(now()) // 创建时间
-  updatedAt       DateTime @updatedAt // 更新时间
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([categoryId])
+  @@index([authorId])
 }
 
 /// 菜谱步骤表
-/// 一个菜谱对应多个步骤，通过sort排序
 model RecipeStep {
   id        String @id @default(cuid()) // 步骤ID
   recipeId  String // 菜谱ID
-  content   String // 步骤内容
-  sort      Int // 步骤顺序
+  content   String // 步骤描述
+  image     String? // 步骤图片
+  sort      Int // 顺序
 
-  recipe    Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade) // 所属菜谱
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 }
 
-/// 菜谱收藏表
-/// 用户与菜谱的多对多关系
+/// 食材基础库
+model Ingredient {
+  id        String @id @default(cuid()) // 食材ID
+  name      String @unique // 食材名称
+  category  String? // 食材分类
+
+  recipes RecipeIngredient[]
+}
+
+/// 菜谱食材关联表
+model RecipeIngredient {
+  id           String @id @default(cuid())
+  recipeId     String
+  ingredientId String
+  amount       String? // 用量描述，例如2个、500g
+
+  recipe     Recipe     @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  ingredient Ingredient @relation(fields: [ingredientId], references: [id])
+
+  @@unique([recipeId, ingredientId])
+}
+
+/// 菜谱营养信息
+model RecipeNutrition {
+  id        String @id @default(cuid())
+  recipeId  String @unique
+  calories  Int? // 热量 kcal
+  protein   Float? // 蛋白质 g
+  fat       Float? // 脂肪 g
+  carbs     Float? // 碳水 g
+
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+}
+
+/// 菜谱媒体资源
+model RecipeMedia {
+  id        String @id @default(cuid())
+  recipeId  String
+  url       String // 图片地址
+  type      String // cover/step
+  sort      Int @default(0)
+
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+}
+
+/// 收藏关系表
 model RecipeFavorite {
-  id        String   @id @default(cuid()) // 收藏记录ID
-  userId    String // 用户ID
-  recipeId  String // 菜谱ID
+  id        String @id @default(cuid())
+  userId    String
+  recipeId  String
 
-  user      User   @relation(fields: [userId], references: [id]) // 收藏用户
-  recipe    Recipe @relation(fields: [recipeId], references: [id]) // 收藏菜谱
+  user User @relation(fields: [userId], references: [id])
+  recipe Recipe @relation(fields: [recipeId], references: [id])
 
-  createdAt DateTime @default(now()) // 收藏时间
+  createdAt DateTime @default(now())
 
-  @@unique([userId, recipeId]) // 防止重复收藏
+  @@unique([userId, recipeId])
+}
+
+/// 社区动态表，支撑发现页
+model CommunityPost {
+  id        String @id @default(cuid())
+  userId    String
+  content   String
+  images    Json?
+  likeCount Int @default(0)
+
+  user User @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
